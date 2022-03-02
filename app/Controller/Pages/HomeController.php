@@ -1,14 +1,15 @@
 <?php
     namespace App\Controller\Pages;
+    use App\Controller\Utils\View;
 
-    /**
-     * Método responsável por retornar o conteúdo da Home
-     * @return string
-     */
     class HomeController
     {
+        /**
+        * Método responsável por retornar o conteúdo da Home
+        * @return string
+        */
         public static function getHome()
         {
-            return "Hello, world";
+            return View::render('pages/home');
         }
     }
