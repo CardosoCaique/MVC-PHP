@@ -57,7 +57,7 @@
         *  Método que retorna o método a URI
         * @return  string
         */
-        public function getHttpUri()
+        public function getUri()
         {
            return $this->uri;
         }

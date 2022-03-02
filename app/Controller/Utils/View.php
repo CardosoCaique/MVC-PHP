@@ -33,4 +33,9 @@
 
             return str_replace($keys, array_values($vars), $contentView);
         }
+
+        public static function pageNotFound()
+        {
+            return file_get_contents(self::$viewPageNotFound);
+        }
     }
