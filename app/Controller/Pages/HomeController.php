@@ -15,6 +15,7 @@
 
             $content = View::render('pages/home', [
                 'name' => $organization->name,
+                'description' => $organization->description
             ]);
 
             return parent::getPage('Home', $content);
