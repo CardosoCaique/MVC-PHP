@@ -1,8 +1,9 @@
 <?php
     namespace App\Controller\Pages;
     use App\Controller\Utils\View;
+    use App\Model\Entity\Organization;
 
-    class HomeController
+    class HomeController extends PagesController
     {
         /**
         * Método responsável por retornar o conteúdo da Home
@@ -10,6 +11,12 @@
         */
         public static function getHome()
         {
-            return View::render('pages/home');
+            $organization = new Organization();
+
+            $content = View::render('pages/home', [
+                'name' => $organization->name,
+            ]);
+
+            return parent::getPage('Home', $content);
         }
     }
