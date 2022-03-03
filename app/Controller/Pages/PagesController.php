@@ -26,7 +26,7 @@
         * Método responsável por retornar o conteúdo do Layout
         * @return string
         */
-        public static function getPage($title, $content)
+        public static function getPage($title, $content = '')
         {
             return View::render('layouts/layout', [
                 'header' => self::getHeader(),

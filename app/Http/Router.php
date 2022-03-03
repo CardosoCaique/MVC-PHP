@@ -3,6 +3,7 @@
 
     use \Closure;
     use \Exception;
+    use \ReflectionFunction;
     use App\Controller\Utils\View;
 
     class Router
@@ -61,6 +62,17 @@
                     continue;
                 }
             }
+
+            //Variáveis da rota
+            $params['variablews'] = [];
+
+            //Padrão de validação das variáveis das rotas
+            $patternVariable = '/{(.*?)}/';
+            if(preg_match_all($patternVariable, $route, $matches)){
+                $route = preg_replace($patternVariable, '(.*?)', $route);
+                $params['variables'] = $matches[1];
+            }
+
             //Padrão de validação da url
             $patternRoute = '/^'.str_replace('/', '\/', $route).'$/';
             //Adiciona a rota na classe
@@ -123,9 +135,17 @@
             //Validar as Rotas
             foreach ($this->routes as $patternRoute => $methods) {
                 //Verifica se a uri bate com o padrão
-                if(preg_match($patternRoute, $uri)) {
+                if(preg_match($patternRoute, $uri, $matches)) {
+                    //Remove a primeira opção
+                    unset($matches[0]);
+
+                    //chaves
+                    $keys = $methods[$httpMethod]['variables'];
+                    $methods[$httpMethod]['variables'] = array_combine($keys, $matches);
+                    $methods[$httpMethod]['variables']['request'] = $this->request;
+
                     //Verifica o método
-                    if($methods[$httpMethod]) {
+                    if(isset($methods[$httpMethod])) {
                         //retorna os parâmetros da rota
                         return $methods[$httpMethod];
                     }
@@ -133,8 +153,7 @@
                 }
             }
 
-            //throw new \Exception("URL não encontrada!", 404);
-            return View::pageNotFound();
+            throw new Exception(View::pageNotFound(), 404);
         }
 
         /*
@@ -146,9 +165,22 @@
             try {
                 //Obtém a rota atual
                 $route = $this->getRoute();
-                echo "<pre>";
-                print_r($route);
-                echo "</pre>";
+
+                //Verificar se o controlador existe
+                if(!isset($route['controller'])){
+                    throw new Exception("Error Processing Request", 500);
+                }
+
+                $args = [];
+
+                //Reflection
+                $reflection = new ReflectionFunction($route['controller']);
+                foreach ($reflection->getParameters() as $parameter) {
+                    $name = $parameter->getName();
+                    $args[$name] = $route['variables'][$name] ?? '';
+                }
+
+                return call_user_func_array($route['controller'], $args);
             } catch (Exception $e) {
                 return new Response($e->getCode(), $e->getMessage());
             }

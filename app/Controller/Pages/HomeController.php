@@ -20,4 +20,9 @@
 
             return parent::getPage('Home', $content);
         }
+
+        public static function getAbout()
+        {
+            return parent::getPage('About');
+        }
     }

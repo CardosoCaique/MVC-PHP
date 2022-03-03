@@ -5,6 +5,14 @@
     {
         static $viewPageNotFound = __DIR__.'/../../../resources/views/http/404.html';
 
+        private static $vars = [];
+        /*
+         * Método que define  os dados iniciais da classe
+        */
+        public static function init($vars = [])
+        {
+            self::$vars = $vars ;
+        }
         /**
         * Método responsável por retornar o conteúdo de uma view
         * @param string $view
@@ -24,6 +32,8 @@
         public static function render($view, $vars = [])
         {
             $contentView = self::getContentView($view);
+
+            $vars = array_merge(self::$vars, $vars);
 
             $keys = array_keys($vars);
 
